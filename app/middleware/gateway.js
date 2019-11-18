@@ -24,7 +24,12 @@ module.exports = options => {
                     errors: e.errors
                 });
             } else {
-                throw e;
+                setCtxBody(ctx, {
+                    code: e.code || -1000,
+                    success: false,
+                    message: e.message,
+                    stack: e.stack
+                });
             }
         }
 
