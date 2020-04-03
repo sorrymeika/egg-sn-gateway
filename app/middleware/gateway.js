@@ -1,10 +1,5 @@
-const { json } = require('../util/resp');
 
-function setCtxBody(ctx, jsonBody) {
-    ctx.body = json(jsonBody);
-}
-
-module.exports = options => {
+module.exports = () => {
     return async function gateway(ctx, next) {
         try {
             await next();
@@ -31,8 +26,19 @@ module.exports = options => {
                     stack: e.stack
                 });
             }
+            ctx.logger.error(e);
         }
-
-        //TODO: 增加日志
     };
 };
+
+function setCtxBody(ctx, jsonBody) {
+    ctx.body = json(jsonBody);
+}
+
+function json(data) {
+    return {
+        ...data,
+        code: data.success ? 0 : (data.code || 100),
+        sysTime: Date.now()
+    };
+}
